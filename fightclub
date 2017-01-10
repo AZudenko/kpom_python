@@ -1,0 +1,97 @@
+#Kpom Game : Project "Fight club"
+import random
+
+strike =[]   
+MyEn=10
+EnEn=10
+MyHP=100
+EnHP=100
+MyAction=['','','','','','']
+Action=[]
+AvAction=[]
+EnemyAction=[]
+FightActions=[['','','','','',''],['','','','','','']]
+act=0
+s=0
+def StrikeInit():#List of basic strikes
+   strike = [ #['*  ','side','hand/leg','level','type','energy','damage'], 
+   ['1: ','left','hand','up','strike',2,20],
+   ['2: ','left','hand','up','block ',1,0], 
+   ['3: ','left','hand','down','strike',2,20],
+   ['4: ','left','hand','down','block ',1,0],
+   ['5: ','right','hand','up','strike',2,20],
+   ['6: ','right','hand','up','block ',1,0], 
+   ['7: ','right','hand','down','strike',2,20],
+   ['8: ','right','hand','down','block ',1,0],
+   ['9: ','left','leg','up','strike',5,50],
+   ['10: ','left','leg','up','block ',1,0], 
+   ['11: ','left','leg','down','strike',3,30],
+   ['12: ','left','leg','down','block ',1,0], 
+   ['13: ','right','leg','up','strike',5,50],
+   ['14: ','right','leg','up','block ',1,0], 
+   ['15: ','right','leg','down','strike',3,30],
+   ['16: ','right','leg','down','block ',1,0],
+   ]
+   return(strike)
+
+def FighterStrikes(EnEn):#Fighter strikes generator   
+    if EnEn==0 :
+        AvAction[0]=['stay','stay','stay','stay','stay',0,0]
+        i=0
+    else:
+            for item in strike:
+                if item[5]<=EnEn :
+                    AvAction.append(item)
+            i=random.randint(0,len(AvAction)-1)
+            EnEn=EnEn-AvAction[i][5]
+    return (AvAction[i],EnEn)
+
+def StrikeSelector(energy):#Player Strike selector
+    print('Energy you have: ',energy)
+    print('Select available action: ')
+    print('Number','\t','Side','\t','H\L','\t','Level','\t','Type  ','|','E','|', 'Damage')
+    for item in strike: 
+        if item[5]<=int(energy):
+            print(item[0],'\t',item[1],'\t',item[2],'\t',item[3],'\t',item[4],'|',item[5],'|', item[6])
+    s=input('Select action: ') 
+    return(strike[int(s)-1])	
+    
+def Round(StrikeList,myhp,fighterhp):
+    if StrikeList[0][4]=='block ' and StrikeList[0][3]==StrikeList[1][3] and	StrikeList[0][1]==StrikeList[1][1] :
+        print ('You gain 0 damage (blocked), ', myhp, 'remaining')
+    else:
+        myhp=myhp-(StrikeList[1][6])
+        print ('You gain ',StrikeList[1][6],' damage,', myhp, 'HP remaining')
+	
+    if StrikeList[1][4]=='block ' and StrikeList[0][3]==StrikeList[1][3] and	StrikeList[0][1]==StrikeList[1][1] :
+        print ('Fighter gain 0 damage (blocked), ', fighterhp, 'HP remaining')
+    else:
+        fighterhp=fighterhp-StrikeList[0][6]
+        print ('Fighter gain ',StrikeList[0][6],' damage, ', fighterhp, 'HP remaining')	
+    return(myhp,fighterhp)
+
+				
+strike=StrikeInit()	
+
+while MyHP>0 and EnHP>0 :
+    FightActions[1],EnEn=FighterStrikes(EnEn)
+    if MyEn>0 :
+        while FightActions[0][0]=='' :
+            Action=StrikeSelector(MyEn)
+            #print(Action)
+            if Action[5]>MyEn :
+                print ('Not enough energy! Select other action.')
+            else :
+                print ('You select : ', Action[1],' ',Action[2],' ',Action[3],'-',Action[4],'. Energy -',Action[5],' Damage:',Action[6])
+                print ('Enemy select : ',FightActions[1])
+                print ('Enemy energy : ',EnEn)
+                FightActions[0]=Action
+                MyEn=MyEn-int(FightActions[0][5])
+                print('Energy remain : ', MyEn)
+        MyHP,EnHP=Round(FightActions,MyHP,EnHP)
+        FightActions[0]=['','','','','','']
+        print('Your HP: ',MyHP)
+        print('Enemy HP: ',EnHP)
+    else :
+        print('You not have energy!')
+        break;
